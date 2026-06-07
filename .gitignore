@@ -207,3 +207,11 @@ sketch
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/python,react,visualstudiocode
+
+# CodeValid — auto-added
+node_modules/
+coverage/
+.next/
+out/
+.turbo/
+.venv/
