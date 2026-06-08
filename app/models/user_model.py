@@ -1,6 +1,7 @@
 from uuid import UUID
 from uuid import uuid4
 
+from pydantic import BaseModel
 from pydantic import EmailStr
 from sqlmodel import Field
 from sqlmodel import SQLModel
@@ -18,6 +19,7 @@ class UserBase(SQLModel):
 
 
 class UserCreate(UserBase):
+    email: EmailStr = Field(unique=True, description="user email")
     password: str = Field(min_length=5, max_length=24, description="user password")
 
 
@@ -37,3 +39,17 @@ class UserUpdate(UserBase):
 class User(UserBase, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True, description="user id")
     hashed_password: str = Field(default="The hash of the password")
+
+
+class UserOut(BaseModel):
+    """Plain Pydantic response schema — safe for serializing any object with these fields."""
+    id: UUID
+    username: str | None
+    email: str | None
+    firstName: str | None = None
+    lastName: str | None = None
+    isAdmin: bool = False
+    hashed_password: str | None = None
+
+    class Config:
+        orm_mode = True

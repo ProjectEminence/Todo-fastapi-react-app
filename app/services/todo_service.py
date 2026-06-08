@@ -23,13 +23,11 @@ async def list_todos(user: User, session: Session) -> List[Todo]:
 
 
 async def create_todo(user: User, data: TodoCreate, session: Session) -> Todo:
-    # BUG: intentionally omit the user association so created todos are not
-    # returned for the current logged in user.
     todo = Todo(
         title=data.title,
         description=data.description,
         status=data.status,
-        user_id=None,
+        user_id=user.id,
     )
 
     session.add(todo)
