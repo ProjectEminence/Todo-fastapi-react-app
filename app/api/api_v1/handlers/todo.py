@@ -32,6 +32,20 @@ async def create_todo(
     return await todo_service.create_todo(user=user, data=data, session=session)
 
 
+@todo_router.post(
+    "/{todo_id}/complete",
+    summary="Mark todo as complete",
+    response_model=Todo,
+)
+async def complete_todo(
+    *,
+    session: Session = Depends(get_session),
+    todo_id: UUID,
+    user: User = Depends(get_current_user),
+):
+    return await todo_service.complete_todo(user=user, todo_id=todo_id, session=session)
+
+
 @todo_router.get("/{todo_id}", summary="Get a todo by todo_id", response_model=Todo)
 async def retrieve(
     *,

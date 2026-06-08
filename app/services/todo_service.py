@@ -23,17 +23,30 @@ async def list_todos(user: User, session: Session) -> List[Todo]:
 
 
 async def create_todo(user: User, data: TodoCreate, session: Session) -> Todo:
+    # BUG: intentionally omit the user association so created todos are not
+    # returned for the current logged in user.
     todo = Todo(
         title=data.title,
         description=data.description,
         status=data.status,
-        user_id=user.id,
+        user_id=None,
     )
 
     session.add(todo)
     session.commit()
     session.refresh(todo)
 
+    return todo
+
+
+async def complete_todo(user: User, todo_id: UUID, session: Session) -> Todo:
+    todo = await retrieve_todo(user=user, todo_id=todo_id, session=session)
+
+    if todo is None:
+        raise TodoNotFoundError(f"Todo with id {todo_id} not found")
+
+    # TODO: implement complete logic. Currently the endpoint returns the todo
+    # without updating the `status` field.
     return todo
 
 
