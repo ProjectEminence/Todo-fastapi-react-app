@@ -44,7 +44,7 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    user = await user_service.get_user_by_id(token_data.sub, session=session)
+    user = await user_service.get_user_by_id(id=token_data.sub, session=session)
 
     if not user:
         raise HTTPException(

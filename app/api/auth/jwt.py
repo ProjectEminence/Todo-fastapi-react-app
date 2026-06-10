@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 import jwt
 from app.api.deps.user_deps import get_current_user
@@ -8,11 +8,12 @@ from app.core.security import create_refresh_token
 from app.core.security import TokenPayload
 from app.core.security import TokenSchema
 from app.database import get_session
-from app.models.user_model import User
+from app.models.user_model import User, UserOut
 from app.services import user_service
 from fastapi import APIRouter
 from fastapi import Body
 from fastapi import Depends
+from fastapi import Form
 from fastapi import HTTPException
 from fastapi import status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -23,6 +24,25 @@ from sqlmodel import Session
 auth_router = APIRouter()
 
 
+class OAuth2PasswordRequestFormAllowEmpty:
+    """Custom form that accepts empty username/password strings."""
+    def __init__(
+        self,
+        username: str = Form(default=""),
+        password: str = Form(default=""),
+        scope: str = Form(default=""),
+        grant_type: Optional[str] = Form(default=None),
+        client_id: Optional[str] = Form(default=None),
+        client_secret: Optional[str] = Form(default=None),
+    ):
+        self.username = username
+        self.password = password
+        self.scopes = scope.split()
+        self.grant_type = grant_type
+        self.client_id = client_id
+        self.client_secret = client_secret
+
+
 @auth_router.post(
     "/login",
     summary="Create access and refresh tokens for user",
@@ -31,7 +51,7 @@ auth_router = APIRouter()
 async def login(
     *,
     session: Session = Depends(get_session),
-    form_data: OAuth2PasswordRequestForm = Depends()
+    form_data: OAuth2PasswordRequestFormAllowEmpty = Depends()
 ) -> Any:
     user = await user_service.authenticate(
         username=form_data.username,
@@ -53,7 +73,7 @@ async def login(
 @auth_router.post(
     "/test-token",
     summary="Test if the access token is valid",
-    response_model=User,
+    response_model=UserOut,
 )
 async def test_token(user: User = Depends(get_current_user)):
     return user
