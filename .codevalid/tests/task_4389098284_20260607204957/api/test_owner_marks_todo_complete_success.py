@@ -7,6 +7,7 @@ os.environ.setdefault("SQL_CONNECTION_STRING", "sqlite://")
 from fastapi.testclient import TestClient
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel.pool import StaticPool
 
 from app.api.deps.user_deps import get_current_user
 from app.database import get_session
@@ -20,6 +21,7 @@ def client_and_session():
     engine = create_engine(
         "sqlite://",
         connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
     )
     SQLModel.metadata.create_all(engine)
     session = Session(engine)

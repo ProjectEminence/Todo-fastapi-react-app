@@ -22,7 +22,7 @@ class TodoBase(SQLModel):
 
 
 class TodoCreate(TodoBase):
-    pass
+    title: str = Field(description="Title of todo", max_length=55, min_length=1)
 
 
 class TodoUpdate(TodoBase):
