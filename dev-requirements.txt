@@ -74,7 +74,7 @@ pytest==7.2.1
     # via
     #   -r dev-requirements.in
     #   pytest-cov
-pytest-cov==4.0.0
+pytest-cov==4.1.0
     # via -r dev-requirements.in
 python-decouple==3.7
     # via -r requirements.txt
